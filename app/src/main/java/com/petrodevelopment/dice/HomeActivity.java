@@ -15,11 +15,29 @@ import android.widget.AdapterView;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.petrodevelopment.dice.rest.OmdbApi;
+import com.petrodevelopment.dice.rest.SimpleService;
+import com.petrodevelopment.dice.rest.model.Movie;
+import com.petrodevelopment.dice.rest.model.Result;
+import com.petrodevelopment.dice.util.U;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -34,9 +52,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initDrawer(Toolbar toolbar) {
+        AccountHeader accountHeader = initAccountHeader();
         Drawer result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
+                .withAccountHeader(accountHeader)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home),
                         new PrimaryDrawerItem().withName(R.string.drawer_item_free_play).withIcon(FontAwesome.Icon.faw_gamepad),
@@ -58,6 +78,23 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+
+    private AccountHeader initAccountHeader() {
+        AccountHeader accountHeader = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.black2)
+                .addProfiles(
+                        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon(getResources().getDrawable(R.drawable.photo))
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+        return accountHeader;
+    }
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,9 +118,27 @@ public class HomeActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+          makeAnApiCall();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void makeAnApiCall() {
+        OmdbApi.getInstance().getOmdbSearch().getMovies("lord", new Callback<Result>() {
+            @Override
+            public void success(Result result, retrofit.client.Response response) {
+                for (Movie movie : result.getSearch()) {
+                    U.log(this, movie.getTitle());
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                    U.log(this, error.getMessage());
+            }
+        });
+    }
+
+
 }
