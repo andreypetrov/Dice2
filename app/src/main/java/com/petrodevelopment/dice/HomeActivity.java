@@ -28,6 +28,8 @@ import com.petrodevelopment.dice.rest.OmdbApi;
 import com.petrodevelopment.dice.rest.SimpleService;
 import com.petrodevelopment.dice.rest.model.Movie;
 import com.petrodevelopment.dice.rest.model.Result;
+import com.petrodevelopment.dice.shuffle.Card;
+import com.petrodevelopment.dice.shuffle.RandomList;
 import com.petrodevelopment.dice.util.U;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -47,8 +49,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
+        initModel();
         initToolbar();
+    }
+
+    private void initModel() {
+        RandomList<Card> cards = RandomList.createFromJsonFile("cards", this);
+        U.log(this, cards);
     }
 
     private void initDrawer(Toolbar toolbar) {
