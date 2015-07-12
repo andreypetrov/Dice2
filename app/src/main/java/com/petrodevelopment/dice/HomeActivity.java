@@ -56,6 +56,13 @@ public class HomeActivity extends AppCompatActivity {
     private void initModel() {
         RandomList<Card> cards = RandomList.createFromJsonFile("cards", this);
         U.log(this, cards);
+
+        U.log(this,cards.pickRandom());
+        U.log(this,cards.pickRandom());
+        U.log(this,cards.pickRandom());
+        U.log(this,cards.pickRandom());
+        U.log(this,cards.pickRandom());
+        U.log(this,cards.pickRandom());
     }
 
     private void initDrawer(Toolbar toolbar) {
