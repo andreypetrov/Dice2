@@ -14,7 +14,7 @@ public class ModelFacade {
 
     //All model data is stored here
     private RandomList<Card> cards;
-    private RandomList<Die> dice;
+    private CollectionRandomLists<DieSide> dice;
     private RandomList<RouletteNumber> roulette;
 
 
@@ -22,6 +22,7 @@ public class ModelFacade {
         this.context = context;
         loadModel();
     }
+
 
 
     public void loadModel() {
@@ -35,7 +36,10 @@ public class ModelFacade {
     }
 
     private void initDice() {
-        dice = RandomList.createFromJsonFile("dice", context);
+        RandomList<DieSide> die1 = RandomList.createFromJsonFile("dice", context);
+        RandomList<DieSide> die2 = RandomList.createFromJsonFile("dice", context);
+        dice = new CollectionRandomLists<DieSide>(die1, die2);
+
     }
 
     private void initCards() {

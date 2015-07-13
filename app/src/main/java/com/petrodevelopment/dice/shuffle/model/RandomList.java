@@ -15,8 +15,10 @@ import java.util.List;
  * Created by andrey on 12/07/2015.
  */
 public class RandomList<E> extends Model implements IRandomList<E> {
-
+    private String imageUrl;
     private List<E> data;
+    private E currentPickedElement;
+    private int currentPickedIndex;
 
     public RandomList () {
     }
@@ -67,7 +69,9 @@ public class RandomList<E> extends Model implements IRandomList<E> {
      */
     @Override
     public int pickRandomIndex() {
-        return Util.randInt(0, size() - 1);
+        currentPickedIndex = Util.randInt(0, size() - 1);
+        currentPickedElement = get(currentPickedIndex);
+        return currentPickedIndex;
     }
 
     /**
@@ -88,4 +92,27 @@ public class RandomList<E> extends Model implements IRandomList<E> {
         this.data = data;
     }
 
+    public E getCurrentPickedElement() {
+        return currentPickedElement;
+    }
+
+    public void setCurrentPickedElement(E currentPickedElement) {
+        this.currentPickedElement = currentPickedElement;
+    }
+
+    public int getCurrentPickedIndex() {
+        return currentPickedIndex;
+    }
+
+    public void setCurrentPickedIndex(int currentPickedIndex) {
+        this.currentPickedIndex = currentPickedIndex;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
