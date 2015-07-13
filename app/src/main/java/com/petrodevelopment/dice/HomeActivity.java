@@ -1,10 +1,6 @@
 package com.petrodevelopment.dice;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,86 +8,67 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.petrodevelopment.dice.navigation.Util;
 import com.petrodevelopment.dice.rest.OmdbApi;
-import com.petrodevelopment.dice.rest.SimpleService;
 import com.petrodevelopment.dice.rest.model.Movie;
 import com.petrodevelopment.dice.rest.model.Result;
-import com.petrodevelopment.dice.shuffle.Card;
-import com.petrodevelopment.dice.shuffle.RandomList;
+import com.petrodevelopment.dice.shuffle.ShuffleFragment;
+import com.petrodevelopment.dice.shuffle.model.Card;
+import com.petrodevelopment.dice.shuffle.model.RandomList;
 import com.petrodevelopment.dice.util.U;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import java.io.IOException;
-import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends BaseActivity {
+    private BaseFragment currentFragment;
+    private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        initModel();
         initToolbar();
+        openFragment(0, "start");
     }
+    @Override
+    public void initModel() {
 
-    private void initModel() {
-        RandomList<Card> cards = RandomList.createFromJsonFile("cards", this);
-        U.log(this, cards);
-
-        U.log(this,cards.pickRandom());
-        U.log(this,cards.pickRandom());
-        U.log(this,cards.pickRandom());
-        U.log(this,cards.pickRandom());
-        U.log(this,cards.pickRandom());
-        U.log(this,cards.pickRandom());
     }
-
     private void initDrawer(Toolbar toolbar) {
         AccountHeader accountHeader = initAccountHeader();
-        Drawer result = new DrawerBuilder()
+        drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(accountHeader)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_free_play).withIcon(FontAwesome.Icon.faw_gamepad),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye),
-                        new SectionDrawerItem().withName(R.string.drawer_item_section_header),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_bullhorn)
-                )
+                .withDrawerItems(Util.createNavigationDrawerItems())
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                        if (drawerItem.getTag()!= null) openFragment(position, (String) drawerItem.getTag());
                         // do something with the clicked item :D
-                        return true;
+                        U.log(this, "position: " + position);
+                        U.log(this, "id: " + id);
+                        return false;
                     }
                 })
                 .build();
 
     }
 
+    private void openFragment(int id, String tag) {
+        currentFragment = ShuffleFragment.newInstance(id, tag);
+        replaceFragment(R.id.container, currentFragment);
+    }
 
     private AccountHeader initAccountHeader() {
         AccountHeader accountHeader = new AccountHeaderBuilder()
@@ -109,6 +86,8 @@ public class HomeActivity extends AppCompatActivity {
                 .build();
         return accountHeader;
     }
+
+
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -122,6 +101,8 @@ public class HomeActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

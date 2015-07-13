@@ -1,4 +1,4 @@
-package com.petrodevelopment.dice.shuffle;
+package com.petrodevelopment.dice.util;
 
 import android.content.Context;
 

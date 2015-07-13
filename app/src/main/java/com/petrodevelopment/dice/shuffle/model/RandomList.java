@@ -1,4 +1,4 @@
-package com.petrodevelopment.dice.shuffle;
+package com.petrodevelopment.dice.shuffle.model;
 
 import android.content.Context;
 
@@ -6,11 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.petrodevelopment.dice.model.Model;
+import com.petrodevelopment.dice.util.Util;
 
-import org.json.JSONObject;
-
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.List;
 
